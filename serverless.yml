@@ -1,0 +1,47 @@
+org: mkwatson
+app: pelosi
+service: pelosi-stock-tracker
+
+frameworkVersion: '3'
+
+
+provider:
+  name: aws
+  runtime: python3.9
+  region: us-west-2
+  environment:
+    TWILIO_ACCOUNT_SID: ${env:TWILIO_ACCOUNT_SID}
+    TWILIO_AUTH_TOKEN: ${env:TWILIO_AUTH_TOKEN}
+    MY_NUMBER: ${env:MY_NUMBER}
+    BUCKET_NAME: pelosi-stock-tracker
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "s3:*"
+#            - "s3:GetObject"
+#            - "s3:PutObject"
+          Resource:
+            - "*"
+#            - 'arn:aws:s3:::${self:custom.bucket}'
+#            - 'arn:aws:s3:::${self:custom.bucket}/*'
+
+custom:
+  bucket: "pelosi-stock-tracker"
+
+resources:
+  Resources:
+    PelosiStockTrackerBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucket}
+
+functions:
+  cronHandler:
+    handler: handler.run
+    events:
+      - schedule: rate(10 minutes)
+
+plugins:
+  - serverless-python-requirements
