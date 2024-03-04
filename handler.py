@@ -19,7 +19,7 @@ def run(event, context):
 
     # Fetch the current disclosure data
     response = requests.post(
-        'https://disclosures-clerk.house.gov/FinancialDisclosure/ViewMemberSearchResult',
+        'https://disclosures-clerk.house.gov/FinancialDisclosure/#Search',
         data={'LastName': 'Pelosi', 'FilingYear': '2024', 'State': 'CA'}
     )
     current_data_hash = hashlib.md5(response.content).hexdigest()
